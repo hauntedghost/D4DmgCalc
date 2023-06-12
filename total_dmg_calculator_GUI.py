@@ -20,7 +20,7 @@ def calculate_damage():
     total_damage = base_damage + dex_damage_modifier
 
     # Display the results in a message box
-    messagebox.showinfo("Damage", "Weapon DPS - {} \nSkill Modifier - {} \nDexterity - {} \n\nBase Damage - {} \nDexterity Modifier - {} \nTotal Damage - {}".format(weapon_dps, skill_modifier, dexterity, base_damage, dex_damage_modifier, total_damage))
+    messagebox.showinfo("Damage", "Weapon DPS - {} \nSkill Modifier - {} \nDexterity - {} \n\nBase Damage =  {} \nDexterity Modifier =  +{}% \nTotal Damage Per Second =  {}".format(weapon_dps, skill_modifier, dexterity, round(base_damage, 2), round(dex_damage_modifier, 2), round(total_damage, 2)))
 
     # Close the main window
     root.destroy()
@@ -28,9 +28,15 @@ def calculate_damage():
 # Create the main window
 root = tk.Tk()
 
+# Set the window title
+root.title("Diablo IV Total Damage Calculator")
+
+# Set the window size
+root.geometry("390x164")
+
 # Create the labels for the three input fields
 weapon_dps_label = tk.Label(root, text="Weapon DPS: ")
-skill_modifier_label = tk.Label(root, text="Skill Modifier: ")
+skill_modifier_label = tk.Label(root, text="Skill Modifier Percentage: ")
 dexterity_label = tk.Label(root, text="Dexterity: ")
 
 # Create the input fields for the three values
