@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import messagebox
 
+# Diablo IV TotalDmg Calculator
+
 # Declare variables.
 weapon_dps = 0
 skill_modifier = 0
