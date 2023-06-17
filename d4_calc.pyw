@@ -24,11 +24,12 @@ str_label = None
 wp_label = None
 int_label = None
 dmgMulti_bonus_entry = None
+dmgAdd_bonus_entry = None
 
 
 def main():
     global weapon_dps_entry, skill_modifier_entry, dex_stat_entry, str_stat_entry, wp_stat_entry, int_stat_entry
-    global character_class_var, dex_label, str_label, wp_label, int_label, dmgMulti_bonus_entry
+    global character_class_var, dex_label, str_label, wp_label, int_label, dmgMulti_bonus_entry, dmgAdd_bonus_entry
 
     # Create the main window.
     root = tk.Tk()
@@ -37,7 +38,7 @@ def main():
     root.title("Diablo IV Total Damage Calculator")
 
     # Set the window size
-    root.geometry("390x280")
+    root.geometry("426x414")
 
     # Create the labels for the user input.
     character_class_label = tk.Label(root, text="Character Class")
@@ -48,10 +49,13 @@ def main():
     wp_label = tk.Label(root, text="Character willpower")
     int_label = tk.Label(root, text="Character intelligence")
     dmgMulti_bonus_label = tk.Label(root, text="Add x% skill bonus")
-    dex_label.grid_forget()  # Hide the "Character Dexterity" label initially
-    str_label.grid_forget()  # Hide the "Character Strength" label initially
-    wp_label.grid_forget()  # Hide the "Character Willpower" label initially
-    int_label.grid_forget()  # Hide the "Character Intelligence" label initially
+    dmgAdd_bonus_label = tk.Label(root, text="Add +% skill bonus")
+
+    # Hide the stat labels initially
+    dex_label.grid_forget()  
+    str_label.grid_forget()  
+    wp_label.grid_forget()  
+    int_label.grid_forget()  
 
     # Create the dropdown menu for character class selection.
     character_class_var = tk.StringVar(root)
@@ -67,32 +71,41 @@ def main():
     wp_stat_entry = tk.Entry(root)
     int_stat_entry = tk.Entry(root)
     dmgMulti_bonus_entry = tk.Entry(root)
-    dex_stat_entry.grid_forget()  # Hide the "Character Dexterity" entry initially
-    str_stat_entry.grid_forget()  # Hide the "Character Strength" entry initially
-    wp_stat_entry.grid_forget()  # Hide the "Character Willpower" entry initially
-    int_stat_entry.grid_forget()  # Hide the "Character Intelligence" entry initially
+    dmgAdd_bonus_entry = tk.Entry(root)
+
+    # Hide the entry boxes for stats initially
+    dex_stat_entry.grid_forget()  
+    str_stat_entry.grid_forget()  
+    wp_stat_entry.grid_forget()  
+    int_stat_entry.grid_forget()  
 
     # Create the button that will calculate the damage.
     calculate_damage_button = tk.Button(root, text="Calculate damage", command=calculate_damage)
 
-    # Add the labels, entry boxes, and dropdown menu to the main window.
-    character_class_label.grid(row=0, column=0)
-    character_class_menu.grid(row=0, column=1)
-    weapon_dps_label.grid(row=1, column=0)
-    weapon_dps_entry.grid(row=1, column=1)
-    skill_modifier_label.grid(row=2, column=0)
-    skill_modifier_entry.grid(row=2, column=1)
-    dex_label.grid(row=3, column=0)
-    dex_stat_entry.grid(row=3, column=1)
-    str_label.grid(row=4, column=0)
-    str_stat_entry.grid(row=4, column=1)
-    wp_label.grid(row=5, column=0)
-    wp_stat_entry.grid(row=5, column=1)
-    int_label.grid(row=6, column=0)
-    int_stat_entry.grid(row=6, column=1)
-    dmgMulti_bonus_label.grid(row=7, column=0)
-    dmgMulti_bonus_entry.grid(row=7, column=1)
-    calculate_damage_button.grid(row=8, column=0, columnspan=2, pady=10, sticky=tk.NSEW)
+    # Position the labels on the grid.
+    character_class_label.grid(row=0, column=0, padx=5, pady=10, sticky="w")
+    weapon_dps_label.grid(row=1, column=0, padx=5, pady=5, sticky="w")
+    skill_modifier_label.grid(row=2, column=0, padx=5, pady=5, sticky="w")
+    dex_label.grid(row=3, column=0, padx=5, pady=5, sticky="w")
+    str_label.grid(row=4, column=0, padx=5, pady=5, sticky="w")
+    wp_label.grid(row=5, column=0, padx=5, pady=5, sticky="w")
+    int_label.grid(row=6, column=0, padx=5, pady=5, sticky="w")
+    dmgMulti_bonus_label.grid(row=7, column=0, padx=5, pady=5, sticky="w")
+    dmgAdd_bonus_label.grid(row=8, column=0, padx=5, pady=5, sticky="w")
+
+    # Position the dropdown menu and entry boxes on the grid.
+    character_class_menu.grid(row=0, column=1, padx=5, pady=10, sticky="w")
+    weapon_dps_entry.grid(row=1, column=1, padx=5, pady=5, sticky="w")
+    skill_modifier_entry.grid(row=2, column=1, padx=5, pady=5, sticky="w")
+    dex_stat_entry.grid(row=3, column=1, padx=5, pady=5, sticky="w")
+    str_stat_entry.grid(row=4, column=1, padx=5, pady=5, sticky="w")
+    wp_stat_entry.grid(row=5, column=1, padx=5, pady=5, sticky="w")
+    int_stat_entry.grid(row=6, column=1, padx=5, pady=5, sticky="w")
+    dmgMulti_bonus_entry.grid(row=7, column=1, padx=5, pady=5, sticky="w")
+    dmgAdd_bonus_entry.grid(row=8, column=1, padx=5, pady=5, sticky="w")
+    
+    # Position the calculate button on the grid.
+    calculate_damage_button.grid(row=9, column=0, columnspan=2, padx=5, pady=10)
 
     # Bind the Enter key to the calculate_damage function
     root.bind('<Return>', calculate_damage)
@@ -102,32 +115,57 @@ def main():
 
 
 def on_character_class_change(*args):
-    selected_class = character_class_var.get()
+    global dex_label, str_label, wp_label, int_label, dex_stat_entry, str_stat_entry, wp_stat_entry, int_stat_entry
 
-    dex_label.grid_forget()
-    dex_stat_entry.grid_forget()
-    str_label.grid_forget()
-    str_stat_entry.grid_forget()
-    wp_label.grid_forget()
-    wp_stat_entry.grid_forget()
-    int_label.grid_forget()
-    int_stat_entry.grid_forget()
+    # Retrieve the selected character class.
+    character_class = character_class_var.get()
 
-    if selected_class == "Rogue":
-        dex_label.grid(row=3, column=0)
-        dex_stat_entry.grid(row=3, column=1)
-    elif selected_class == "Barbarian":
-        str_label.grid(row=3, column=0)
-        str_stat_entry.grid(row=3, column=1)
-    elif selected_class == "Druid":
-        wp_label.grid(row=3, column=0)
-        wp_stat_entry.grid(row=3, column=1)
-    elif selected_class == "Necromancer":
-        wp_label.grid(row=3, column=0)
-        wp_stat_entry.grid(row=3, column=1)
-    elif selected_class == "Sorcerer":
-        int_label.grid(row=3, column=0)
-        int_stat_entry.grid(row=3, column=1)
+    # Show or hide the corresponding labels and entry boxes based on the selected character class.
+    if character_class == "Barbarian":
+        dex_label.grid_forget()
+        str_label.grid(row=3, column=0, padx=5, pady=5, sticky="w")
+        wp_label.grid_forget()
+        int_label.grid_forget()
+        dex_stat_entry.grid_forget()
+        str_stat_entry.grid(row=3, column=1, padx=5, pady=5, sticky="w")
+        wp_stat_entry.grid_forget()
+        int_stat_entry.grid_forget()
+    elif character_class == "Rogue":
+        dex_label.grid(row=3, column=0, padx=5, pady=5, sticky="w")
+        str_label.grid_forget()
+        wp_label.grid_forget()
+        int_label.grid_forget()
+        dex_stat_entry.grid(row=3, column=1, padx=5, pady=5, sticky="w")
+        str_stat_entry.grid_forget()
+        wp_stat_entry.grid_forget()
+        int_stat_entry.grid_forget()
+    elif character_class == "Druid":
+        dex_label.grid_forget()
+        str_label.grid_forget()
+        wp_label.grid(row=3, column=0, padx=5, pady=5, sticky="w")
+        int_label.grid_forget()
+        dex_stat_entry.grid_forget()
+        str_stat_entry.grid_forget()
+        wp_stat_entry.grid(row=3, column=1, padx=5, pady=5, sticky="w")
+        int_stat_entry.grid_forget()
+    elif character_class == "Necromancer":
+        dex_label.grid_forget()
+        str_label.grid_forget()
+        wp_label.grid(row=3, column=0, padx=5, pady=5, sticky="w")
+        int_label.grid_forget()
+        dex_stat_entry.grid_forget()
+        str_stat_entry.grid_forget()
+        wp_stat_entry.grid(row=3, column=1, padx=5, pady=5, sticky="w")
+        int_stat_entry.grid_forget()
+    elif character_class == "Sorcerer":
+        dex_label.grid_forget()
+        str_label.grid_forget()
+        wp_label.grid_forget()
+        int_label.grid(row=3, column=0, padx=5, pady=5, sticky="w")
+        dex_stat_entry.grid_forget()
+        str_stat_entry.grid_forget()
+        wp_stat_entry.grid_forget()
+        int_stat_entry.grid(row=3, column=1, padx=5, pady=5, sticky="w")
 
 
 def calculate_base_damage(weapon_dmg, skill_modifier):
@@ -153,7 +191,7 @@ def calculate_mainStat_bonus(attribute_value):
     Returns:
         The main stat bonus.
     """
-    main_stat_bonus = 1 + (attribute_value * 0.001)
+    main_stat_bonus = (1 + (attribute_value * 0.001))
     return main_stat_bonus
 
 def calculate_multi_bonus(dmgMulti_bonus):
@@ -161,7 +199,7 @@ def calculate_multi_bonus(dmgMulti_bonus):
     Calculates the multiplicative bonus.
 
     Args:
-        dmgMulti_bonus: The value of the multiplicative bonus.
+        dmgMulti_bonus: The value of the multiplicative bonuses.
 
     Returns:
         The multiplicative bonus.
@@ -169,12 +207,24 @@ def calculate_multi_bonus(dmgMulti_bonus):
     multi_bonus = 1+(dmgMulti_bonus / 100)
     return multi_bonus
 
-def calculate_damage(event=None):
-    global weapon_dps, skill_modifier, dex_stat, str_stat, wp_stat, int_stat
+def calculate_add_bonus(dmgAdd_bonus):
+    """
+    Calculates the addative bonus.
 
+    Args:
+        dmgAdd_bonus: The value of the addative bonuses.
+
+    Returns:
+        The addative bonus.
+    """
+    add_bonus = 1+(dmgAdd_bonus / 100)
+    return add_bonus
+
+def calculate_damage(event=None):
     # Get the user input.
     weapon_dps = int(weapon_dps_entry.get())
     skill_modifier = int(skill_modifier_entry.get())
+
     dmgMulti_bonus = 0
     dmgMulti_bonus_value = dmgMulti_bonus_entry.get()
     if dmgMulti_bonus_value:
@@ -184,50 +234,61 @@ def calculate_damage(event=None):
             messagebox.showerror("Error", "Please enter an integer value for 'Add x% skill bonus'.")
             return
 
+    dmgAdd_bonus = 0
+    dmgAdd_bonus_value = dmgAdd_bonus_entry.get()
+    if dmgAdd_bonus_value:
+        try:
+            dmgAdd_bonus = int(dmgAdd_bonus_value)
+        except ValueError:
+            messagebox.showerror("Error", "Please enter an integer value for 'Add +% skill bonus'.")
+            return
+
     # Check the selected character class and get the corresponding attribute value and label.
     selected_class = character_class_var.get()
     attribute_value = None
     attribute_label = None
+
     if selected_class == "Rogue":
         attribute_value = int(dex_stat_entry.get())
         attribute_label = "Dexterity"
-        dexMulti_dmg = calculate_mainStat_bonus(attribute_value) * calculate_base_damage(weapon_dps, skill_modifier)
-        skillMulti_bonus = calculate_base_damage(weapon_dps, skill_modifier) * calculate_mainStat_bonus(attribute_value) * calculate_multi_bonus(dmgMulti_bonus)
-        messagebox.showinfo("Results", f"User Inputs:\n\nCharacter Class - {selected_class}\nWeapon DPS - {locale.format_string('%d', weapon_dps, grouping=True)}\nSkill Modifier - {locale.format_string('%d', skill_modifier, grouping=True)}\n{attribute_label} - {locale.format_string('%d', attribute_value, grouping=True)}\nAdded x% bonus - {locale.format_string('%d', dmgMulti_bonus, grouping=True)}%\n\n********\n\nDamage Calculations:\n\nBase Skill Damage = {locale.format_string('%0.2f', calculate_base_damage(weapon_dps, skill_modifier), grouping=True)}\nSkill Damage (w/ stat multiplier) = {locale.format_string('%0.2f', dexMulti_dmg, grouping=True)}\nSkill Damage (w/ stat multi and {dmgMulti_bonus}% bonus): {locale.format_string('%0.2f', skillMulti_bonus, grouping=True)}")
     elif selected_class == "Barbarian":
         attribute_value = int(str_stat_entry.get())
         attribute_label = "Strength"
-        # Calculate the strMulti_dmg for Barbarian class.
-        strMulti_dmg = calculate_mainStat_bonus(attribute_value) * calculate_base_damage(weapon_dps, skill_modifier)
-        skillMulti_bonus = calculate_base_damage(weapon_dps, skill_modifier) * calculate_mainStat_bonus(attribute_value) * calculate_multi_bonus(dmgMulti_bonus)
-        # Display the total damage and strMulti_dmg to the user, with the associated attribute.
-        messagebox.showinfo("Results", f"User Inputs:\n\nCharacter Class - {selected_class}\nWeapon DPS - {locale.format_string('%d', weapon_dps, grouping=True)}\nSkill Modifier - {locale.format_string('%d', skill_modifier, grouping=True)}\n{attribute_label} - {locale.format_string('%d', attribute_value, grouping=True)}\nAdded x% bonus - {locale.format_string('%d', dmgMulti_bonus, grouping=True)}%\n\n********\n\nDamage Calculations:\n\nBase Skill Damage = {locale.format_string('%0.2f', calculate_base_damage(weapon_dps, skill_modifier), grouping=True)}\nSkill Damage (w/ stat multiplier) = {locale.format_string('%0.2f', strMulti_dmg, grouping=True)}\nSkill Damage (w/ stat multi and {dmgMulti_bonus}% bonus): {locale.format_string('%0.2f', skillMulti_bonus, grouping=True)}")
-
-    elif selected_class == "Druid":
+    elif selected_class == "Druid" or selected_class == "Necromancer":
         attribute_value = int(wp_stat_entry.get())
         attribute_label = "Willpower"
-        # Calculate the wpMulti_dmg for Druid class.
-        wpMulti_dmg = calculate_mainStat_bonus(attribute_value) * calculate_base_damage(weapon_dps, skill_modifier)
-        skillMulti_bonus = calculate_base_damage(weapon_dps, skill_modifier) * calculate_mainStat_bonus(attribute_value) * calculate_multi_bonus(dmgMulti_bonus)
-        # Display the total damage and wpMulti_dmg to the user, with the associated attribute.
-        messagebox.showinfo("Results", f"User Inputs:\n\nCharacter Class - {selected_class}\nWeapon DPS - {locale.format_string('%d', weapon_dps, grouping=True)}\nSkill Modifier - {locale.format_string('%d', skill_modifier, grouping=True)}\n{attribute_label} - {locale.format_string('%d', attribute_value, grouping=True)}\nAdded x% bonus - {locale.format_string('%d', dmgMulti_bonus, grouping=True)}%\n\n********\n\nDamage Calculations:\n\nBase Skill Damage = {locale.format_string('%0.2f', calculate_base_damage(weapon_dps, skill_modifier), grouping=True)}\nSkill Damage (w/ stat multiplier) = {locale.format_string('%0.2f', wpMulti_dmg, grouping=True)}\nSkill Damage (w/ stat multi and {dmgMulti_bonus}% bonus): {locale.format_string('%0.2f', skillMulti_bonus, grouping=True)}")
-    elif selected_class == "Necromancer":
-        attribute_value = int(wp_stat_entry.get())
-        attribute_label = "Willpower"
-        # Calculate the wpMulti_dmg for Necromancer class.
-        wpMulti_dmg = calculate_mainStat_bonus(attribute_value) * calculate_base_damage(weapon_dps, skill_modifier)
-        skillMulti_bonus = calculate_base_damage(weapon_dps, skill_modifier) * calculate_mainStat_bonus(attribute_value) * calculate_multi_bonus(dmgMulti_bonus)
-        # Display the total damage and wpMulti_dmg to the user, with the associated attribute.
-        messagebox.showinfo("Results", f"User Inputs:\n\nCharacter Class - {selected_class}\nWeapon DPS - {locale.format_string('%d', weapon_dps, grouping=True)}\nSkill Modifier - {locale.format_string('%d', skill_modifier, grouping=True)}\n{attribute_label} - {locale.format_string('%d', attribute_value, grouping=True)}\nAdded x% bonus - {locale.format_string('%d', dmgMulti_bonus, grouping=True)}%\n\n********\n\nDamage Calculations:\n\nBase Skill Damage = {locale.format_string('%0.2f', calculate_base_damage(weapon_dps, skill_modifier), grouping=True)}\nSkill Damage (w/ stat multiplier) = {locale.format_string('%0.2f', wpMulti_dmg, grouping=True)}\nSkill Damage (w/ stat multi and {dmgMulti_bonus}% bonus): {locale.format_string('%0.2f', skillMulti_bonus, grouping=True)}")
     elif selected_class == "Sorcerer":
         attribute_value = int(int_stat_entry.get())
         attribute_label = "Intelligence"
-        # Calculate the intMulti_dmg for Sorcerer class.
-        intMulti_dmg = calculate_mainStat_bonus(attribute_value) * calculate_base_damage(weapon_dps, skill_modifier)
-        skillMulti_bonus = calculate_base_damage(weapon_dps, skill_modifier) * calculate_mainStat_bonus(attribute_value) * calculate_multi_bonus(dmgMulti_bonus)
-        # Display the total damage and intMulti_dmg to the user, with the associated attribute.
-        messagebox.showinfo("Results", f"User Inputs:\n\nCharacter Class - {selected_class}\nWeapon DPS - {locale.format_string('%d', weapon_dps, grouping=True)}\nSkill Modifier - {locale.format_string('%d', skill_modifier, grouping=True)}\n{attribute_label} - {locale.format_string('%d', attribute_value, grouping=True)}\nAdded x% bonus - {locale.format_string('%d', dmgMulti_bonus, grouping=True)}%\n\n********\n\nDamage Calculations:\n\nBase Skill Damage = {locale.format_string('%0.2f', calculate_base_damage(weapon_dps, skill_modifier), grouping=True)}\nSkill Damage (w/ stat multiplier) = {locale.format_string('%0.2f', intMulti_dmg, grouping=True)}\nSkill Damage (w/ stat multi and {dmgMulti_bonus}% bonus): {locale.format_string('%0.2f', skillMulti_bonus, grouping=True)}")
     else:
         messagebox.showerror("Error", "Please select a character class.")
+        return
+
+    base_damage = calculate_base_damage(weapon_dps, skill_modifier)
+    main_stat_bonus = calculate_mainStat_bonus(attribute_value)
+    multi_bonus = calculate_multi_bonus(dmgMulti_bonus)
+    add_bonus = calculate_add_bonus(dmgAdd_bonus)
+
+    skillStat_dmg = main_stat_bonus * 100
+    skillMultiBonus_dmg = base_damage * multi_bonus -base_damage
+    skillAddBonus_dmg = base_damage * add_bonus - base_damage
+    totalDmg = base_damage * main_stat_bonus * multi_bonus * add_bonus
+
+    # Show/Hide multi bonuses or add bonuses depending if their values are blank or not
+    result_message = ""  # Initialize result_message with an empty string
+    skill_multi_bonus_message = ""
+    if dmgMulti_bonus > 1:
+        skill_multi_bonus_message += f"x{dmgMulti_bonus}% bonus): {locale.format_string('%0.2f', skillMultiBonus_dmg, grouping=True)}\n"
+    
+    skill_add_bonus_message = ""
+    if dmgAdd_bonus > 1:
+        skill_add_bonus_message += f"+{dmgAdd_bonus}% bonus): {locale.format_string('%0.2f', skillAddBonus_dmg, grouping=True)}\n"
+
+    totalDmg_resultMessage = f"Total Damage (w/ all bonuses): {locale.format_string('%0.2f', totalDmg, grouping=True)}"
+
+    # Display the results to the user.
+    #result_message = f"User Inputs:\n\nCharacter Class - {selected_class}\nWeapon DPS - {locale.format_string('%d', weapon_dps, grouping=True)}\nSkill Modifier - {locale.format_string('%d', skill_modifier, grouping=True)}\n{attribute_label} - {locale.format_string('%d', attribute_value, grouping=True)}\nAdded x% bonus - {locale.format_string('%d', dmgMulti_bonus, grouping=True)}%\nAdded +% bonus - {locale.format_string('%d', dmgAdd_bonus, grouping=True)}%\n\n********\n\nDamage Calculations:\n\nBase Skill Damage = {locale.format_string('%0.2f', base_damage, grouping=True)}\nSkill Damage (w/ stat multiplier) = {locale.format_string('%0.2f', skillMulti_bonus, grouping=True)}\nSkill Damage (w/ stat multi and x{dmgMulti_bonus}% bonus): {locale.format_string('%0.2f', skillMulti_bonus, grouping=True)}\nSkill Damage (w/ stat multi and +{dmgAdd_bonus}% bonus): {locale.format_string('%0.2f', skillAdd_bonus, grouping=True)}\nTotal Damage (w/ all bonuses): {locale.format_string('%0.2f', totalDmg, grouping=True)}"
+    result_message = f"User Inputs:\n\nCharacter Class - {selected_class}\nWeapon DPS - {locale.format_string('%d', weapon_dps, grouping=True)}\nSkill Modifier - {locale.format_string('%d', skill_modifier, grouping=True)}\n{attribute_label} - {locale.format_string('%d', attribute_value, grouping=True)}\nAdded x% bonus - {locale.format_string('%d', dmgMulti_bonus, grouping=True)}%\nAdded +% bonus - {locale.format_string('%d', dmgAdd_bonus, grouping=True)}%\n\n********\n\nDamage Calculations:\n\nBase Skill Damage = {locale.format_string('%0.2f', base_damage, grouping=True)}\n{attribute_label} multiplier bonus = +{locale.format_string('%0.2f', skillStat_dmg, grouping=True)}%\n" + skill_multi_bonus_message + skill_add_bonus_message + totalDmg_resultMessage
+    messagebox.showinfo("Results", result_message)
 
 main()
